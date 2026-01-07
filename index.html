@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+<title>Momentum: Routes</title>
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0b1020" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes" />
+
+<style>
+  :root{
+    --bg:#0b1020;
+    --card:#111a2e;
+    --card2:#0f172a;
+    --border: rgba(255,255,255,.08);
+
+    --text:#e9edf5;
+    --dim:#a7b0c2;
+
+    --accent:#63d6c7;
+    --accent2:#8fb8ff;
+    --danger:#ff6b6b;
+
+    --radius-lg:18px;
+    --radius-md:14px;
+
+    --shadow: 0 10px 28px rgba(0,0,0,.35);
+    --shadow-soft: 0 6px 18px rgba(0,0,0,.28);
+
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    letter-spacing: .1px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .app{ max-width: 540px; margin: 0 auto; padding: 18px 16px 108px; }
+
+  header{
+    position: sticky; top:0; z-index: 20;
+    padding: 14px 0 14px;
+    background: rgba(11,16,32,.78);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .headerRow{ display:flex; align-items:center; justify-content:space-between; gap:14px; }
+  .brand{ display:flex; align-items:center; gap:12px; min-width:0; }
+  .logo{
+    width:42px; height:42px; border-radius: 14px;
+    background: rgba(99,214,199,.12);
+    border: 1px solid rgba(99,214,199,.18);
+    display:grid; place-items:center;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: .6px;
+  }
+  .title{ min-width:0; }
+  .title h1{ margin:0; font-size: 16px; font-weight: 520; letter-spacing:.2px; }
+  .title p{
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--dim);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .pillrow{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .pill{
+    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(255,255,255,.03);
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--dim);
+    font-weight: 500;
+  }
+  .pill b{ color: var(--text); font-family: var(--mono); font-weight: 650; }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; }
+
+  .hero{
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(17,26,46,.86);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .heroInner{ padding: 16px; display:flex; gap:14px; align-items:center; justify-content:space-between; }
+  .heroLeft{ min-width:0; }
+  .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size: 11px; color: var(--dim);
+    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(255,255,255,.03);
+    padding: 5px 9px; border-radius: 999px;
+    font-weight: 500;
+  }
+  .heroLeft h2{
+    margin: 10px 0 2px;
+    font-size: 15px;
+    font-weight: 520;
+    white-space: nowrap; overflow:hidden; text-overflow: ellipsis;
+  }
+  .heroLeft p{ margin:0; font-size: 12px; color: var(--dim); line-height:1.35; max-width: 330px; }
+  .heroRight{ display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+
+  .bigNum{
+    font-family: var(--mono);
+    font-weight: 650;
+    font-size: 12px;
+    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(255,255,255,.03);
+    padding: 6px 10px;
+    border-radius: 999px;
+  }
+
+  .card{
+    background: rgba(17,26,46,.86);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+  .card + .card{ margin-top: 14px; }
+
+  .sectionLabel{
+    display:block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: .2px;
+    margin-bottom: 10px;
+  }
+
+  .kpiGrid{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .kpi{
+    background: rgba(15,23,42,.65);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: var(--shadow-soft);
+  }
+  .kpi .lbl{ color: var(--dim); font-size: 12px; font-weight: 500; }
+  .kpi .val{ font-size: 22px; font-weight: 520; margin-top: 6px; }
+  .kpi .val small{ font-size: 12px; color: var(--dim); font-weight: 500; }
+
+  .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .grow{ flex:1; min-width:0; }
+
+  .btn{
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.03);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-weight: 520;
+    cursor:pointer;
+    transition: transform .04s ease, background .15s ease, border-color .15s ease;
+    white-space: nowrap;
+  }
+  .btn:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.10); }
+  .btn:active{ transform: translateY(1px); }
+  .btnPrimary{ background: rgba(99,214,199,.14); border-color: rgba(99,214,199,.22); }
+  .btnGhost{ background: transparent; }
+  .btnDanger{ background: rgba(255,107,107,.10); border-color: rgba(255,107,107,.22); color: #ffd2d2; }
+
+  .barWrap{ margin-top: 12px; }
+  .barWrap + .barWrap{ margin-top: 18px; }
+  .barLbl{ display:flex; justify-content:space-between; gap:10px; font-size: 12px; color: var(--dim); margin-bottom: 8px; font-weight: 500; }
+  .bar{
+    height: 10px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 999px;
+    overflow:hidden;
+  }
+  .bar > div{ height:100%; background: var(--accent); }
+  .bar.time > div{ background: var(--accent2); }
+
+  .missionList{ display:flex; flex-direction:column; gap:12px; }
+  .mission{
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(15,23,42,.65);
+    padding: 14px;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    justify-content:space-between;
+    box-shadow: var(--shadow-soft);
+  }
+  .mTop{ display:flex; gap:12px; align-items:flex-start; min-width:0; }
+  .mIcon{
+    width: 40px; height: 40px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(99,214,199,.10);
+    display:grid; place-items:center;
+    font-size: 18px;
+  }
+  .mTitle{ font-weight: 600; letter-spacing:.1px; }
+  .mSub{ color: var(--dim); font-size: 12px; margin-top: 5px; line-height: 1.35; }
+  .tag{
+    font-size: 11px;
+    color: var(--dim);
+    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(255,255,255,.03);
+    border-radius: 999px;
+    padding: 5px 8px;
+    display:inline-flex;
+    gap:6px;
+    align-items:center;
+    font-weight: 500;
+  }
+  .tag b{ color: var(--text); font-family: var(--mono); font-weight: 650; }
+  .dot{ width:8px; height:8px; border-radius:99px; background: var(--accent); display:inline-block; }
+  .dot.blue{ background: var(--accent2); }
+  .dot.ok{ background: var(--accent); }
+  .dot.gray{ background: rgba(167,176,194,.8); }
+
+  label{ display:block; font-size: 12px; color: var(--dim); margin: 12px 0 6px; font-weight: 500; }
+  input,select{
+    width:100%;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
+    color: var(--text);
+    border-radius: 14px;
+    padding: 10px 12px;
+    outline:none;
+    font-weight: 500;
+  }
+  input[type="date"]{ color-scheme: dark; }
+
+  /* Top-down menus should have black text */
+  select{
+    background:#f8fafc !important;
+    color:#0b1220 !important;
+    border-color: rgba(0,0,0,.18) !important;
+  }
+  select option{ color:#0b1220 !important; }
+
+  .list{ display:flex; flex-direction:column; gap:10px; }
+  .postItem{
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(15,23,42,.65);
+    padding: 12px;
+    box-shadow: var(--shadow-soft);
+  }
+  .postTop{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+  .postTop b{ font-weight: 600; }
+  .postMeta{ color: var(--dim); font-size: 12px; margin-top: 6px; }
+
+  .tabs{
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 14px;
+    width: min(540px, calc(100% - 32px));
+    background: rgba(17,26,46,.88);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 20px;
+    padding: 8px;
+    display:flex; gap:8px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+  }
+  .tab{
+    flex:1;
+    border:none;
+    border-radius: 16px;
+    padding: 11px 10px;
+    background: transparent;
+    color: var(--dim);
+    font-weight: 520;
+    cursor:pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .tab.active{
+    background: rgba(99,214,199,.14);
+    color: var(--text);
+    border: 1px solid rgba(99,214,199,.22);
+  }
+
+  .toast{
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 94px;
+    background: rgba(17,26,46,.92);
+    border: 1px solid rgba(255,255,255,.08);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events:none;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(12px);
+  }
+  .toast.show{ opacity: 1; }
+
+  .tiny{ font-size: 11px; color: rgba(167,176,194,.9); margin-top: 10px; }
+
+  dialog{
+    width:min(520px, calc(100% - 28px));
+    border:none;
+    border-radius: 18px;
+    padding:0;
+    background: rgba(17,26,46,.98);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .dlgHead{ padding: 14px 14px 0; }
+  .dlgHead h3{ margin:0; font-weight: 600; font-size: 15px; }
+  .dlgBody{ padding: 12px 14px 14px; }
+  .dlgFoot{ display:flex; gap:10px; justify-content:flex-end; padding: 0 14px 14px; }
+  .hint{ color: var(--dim); font-size: 12px; margin-top: 6px; line-height:1.35; }
+
+  .chipToggle{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .chip{
+    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(255,255,255,.03);
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--dim);
+    font-weight: 520;
+    cursor:pointer;
+    user-select:none;
+  }
+  .chip.active{
+    color: var(--text);
+    border-color: rgba(99,214,199,.22);
+    background: rgba(99,214,199,.12);
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="app headerRow">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="title">
+          <h1>Momentum: Routes</h1>
+          <p>Track multiple distance missions at once</p>
+        </div>
+      </div>
+      <div class="pillrow">
+        <div class="pill">Active <b id="pillActive">0</b></div>
+        <div class="pill">Completed <b id="pillCompleted">0</b></div>
+        <div class="pill">Total <b id="pillTotal">0.0</b> <span id="pillUnit">mi</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <!-- Overview -->
+    <section id="screenOverview" class="screen active">
+      <div class="hero">
+        <div class="heroInner">
+          <div class="heroLeft">
+            <div class="kicker">🟡 Saved on this device • works offline</div>
+            <h2 id="heroTitle">No active missions yet</h2>
+            <p id="heroDesc">Add long-term missions (like Ring Road) and short “weekend warrior” missions at the same time.</p>
+          </div>
+          <div class="heroRight">
+            <div class="bigNum"><span id="heroMiles">0.0</span> <span id="heroUnit">mi</span></div>
+            <button class="btn btnPrimary" id="btnAddMission">Add mission</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <span class="sectionLabel">Statistics</span>
+        <div class="kpiGrid">
+          <div class="kpi"><div class="lbl">This week</div><div class="val"><span id="kpiWeek">0.0</span> <small id="kpiWeekUnit">mi</small></div></div>
+          <div class="kpi"><div class="lbl">This month</div><div class="val"><span id="kpiMonth">0.0</span> <small id="kpiMonthUnit">mi</small></div></div>
+          <div class="kpi"><div class="lbl">This year</div><div class="val"><span id="kpiYear">0.0</span> <small id="kpiYearUnit">mi</small></div></div>
+          <div class="kpi"><div class="lbl">All-time</div><div class="val"><span id="kpiAll">0.0</span> <small id="kpiAllUnit">mi</small></div></div>
+        </div>
+        <div class="tiny">Stats are based on your logged posts (across all missions).</div>
+      </div>
+
+      <div class="card">
+        <span class="sectionLabel">Badges</span>
+        <div class="hint">Badges are awarded per mission at 10%, 25%, 50%, 75%, and 100% distance.</div>
+        <div class="row" style="margin-top:10px;">
+          <div class="pill">Badges earned <b id="pillBadges">0</b></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="sectionLabel">Missions</span>
+        <div class="hint">Tap <b>Open</b> to view / edit a mission. Completed missions are read-only.</div>
+
+        <div style="height:10px;"></div>
+        <div class="row" style="justify-content:space-between; align-items:center;">
+          <div class="pill">Active <b id="activeCount">0</b></div>
+          <div class="pill">Completed <b id="completedCount">0</b></div>
+        </div>
+
+        <div style="height:12px;"></div>
+        <div class="sectionLabel" style="font-size:14px; margin-bottom:8px;">Active missions</div>
+        <div id="activeMissions" class="missionList"></div>
+        <div class="tiny" id="activeHint">Add a mission to start tracking.</div>
+
+        <div style="height:14px;"></div>
+        <div class="sectionLabel" style="font-size:14px; margin-bottom:8px;">Completed missions</div>
+        <div id="completedMissions" class="missionList"></div>
+        <div class="tiny" id="completedHint">No completed missions yet.</div>
+      </div>
+    </section>
+
+    <!-- Mission -->
+    <section id="screenMission" class="screen">
+      <div class="hero">
+        <div class="heroInner">
+          <div class="heroLeft">
+            <div class="kicker">Mission</div>
+
+            <label style="margin-top:10px;">Choose mission</label>
+            <select id="missionSelect"></select>
+
+            <div style="height:10px;"></div>
+            <div class="chipToggle">
+              <div class="chip active" id="chipActive">Active</div>
+              <div class="chip" id="chipCompleted">Completed</div>
+            </div>
+
+            <div style="height:12px;"></div>
+            <h2 id="missionTitle">—</h2>
+            <p id="missionDesc">—</p>
+          </div>
+          <div class="heroRight">
+            <div class="bigNum"><span id="missionProgressNum">0.0</span> <span id="missionUnit">mi</span></div>
+            <button class="btn btnPrimary" id="btnPostFromMission">Post distance</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;" id="timeframeCard">
+        <span class="sectionLabel">Timeframe</span>
+        <div class="row">
+          <div class="grow">
+            <label>Start date</label>
+            <input id="tfStart" type="date" />
+          </div>
+          <div class="grow">
+            <label>Days</label>
+            <input id="tfDays" type="number" min="1" step="1" placeholder="e.g. 150" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn btnPrimary" id="btnSaveTimeframe">Save timeframe</button>
+          <button class="btn btnDanger" id="btnCompleteMission">Mark complete</button>
+        </div>
+        <div class="tiny">You can change the timeframe any time (for active missions).</div>
+      </div>
+
+      <div class="card">
+        <span class="sectionLabel">Mission statistics</span>
+        <div class="barWrap">
+          <div class="barLbl"><span>Distance <span id="distPct">0%</span></span><span><span id="distDone">0.0</span>/<span id="distGoal">0.0</span> <span id="distUnit">mi</span></span></div>
+          <div class="bar"><div id="distBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="barWrap">
+          <div class="barLbl"><span>Time <span id="timePct">0%</span></span><span><span id="daysDone">0</span>/<span id="daysGoal">0</span> days</span></div>
+          <div class="bar time"><div id="timeBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
+          <div class="pill">Remaining <b id="remainDist">0.0</b> <span id="remainUnit">mi</span></div>
+          <div class="pill">Remaining <b id="remainDays">0</b> days</div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div class="pill">Completed <b id="doneDist">0.0</b> <span id="doneUnit">mi</span></div>
+          <div class="pill">Elapsed <b id="doneDays">0</b> days</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="sectionLabel">Badges</span>
+        <div class="hint">Badges are awarded at 10%, 25%, 50%, 75%, and 100% distance.</div>
+        <div id="badgeRow" class="row" style="gap:8px; flex-wrap:wrap;"></div>
+      </div>
+
+      <div class="card">
+        <span class="sectionLabel">Recent posts</span>
+        <div id="missionPosts" class="list"></div>
+        <div class="tiny" id="missionPostsHint">No posts yet for this mission.</div>
+      </div>
+    </section>
+
+    <!-- Post -->
+    <section id="screenPost" class="screen">
+      <div class="card">
+        <span class="sectionLabel">Post distance</span>
+
+        <label>Select mission</label>
+        <select id="postMission"></select>
+
+        <div class="row">
+          <div class="grow">
+            <label>Date</label>
+            <input id="postDate" type="date" />
+          </div>
+          <div class="grow">
+            <label>Unit</label>
+            <select id="postUnit">
+              <option value="mi">miles</option>
+              <option value="km">km</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Activity</label>
+        <select id="postActivity">
+          <option>walking</option>
+          <option>cycling</option>
+          <option>rowing</option>
+          <option>elliptical</option>
+          <option>running</option>
+        </select>
+
+        <label>Distance</label>
+        <input id="postDistance" type="number" min="0" step="0.01" placeholder="e.g. 3.2" />
+
+        <div class="row" style="margin-top:12px;">
+          <button class="btn btnPrimary" id="btnSavePost">Save</button>
+          <button class="btn btnGhost" id="btnClearPost">Clear</button>
+        </div>
+
+        <div class="tiny">Tip: You can post to any active mission. Stats update instantly.</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="mission">Mission</button>
+    <button class="tab" data-tab="post">Post</button>
+  </div>
+
+  <div id="toast" class="toast">Saved</div>
+
+  <dialog id="dlgAdd">
+    <div class="dlgHead"><h3>Add mission</h3></div>
+    <div class="dlgBody">
+      <label>Choose a mission</label>
+      <select id="dlgMission"></select>
+      <div class="row">
+        <div class="grow">
+          <label>Timeframe (days)</label>
+          <input id="dlgDays" type="number" min="1" step="1" placeholder="e.g. 150" />
+        </div>
+        <div class="grow">
+          <label>Start date</label>
+          <input id="dlgStart" type="date" />
+        </div>
+      </div>
+      <div class="hint">You can add multiple missions (short + long) and track them in parallel.</div>
+    </div>
+    <div class="dlgFoot">
+      <button class="btn btnGhost" id="dlgCancel">Cancel</button>
+      <button class="btn btnPrimary" id="dlgAddBtn">Add</button>
+    </div>
+  </dialog>
+
+<script>
+/* ========= Missions ========= */
+const MISSIONS = [
+  { id:"angkor", name:"Angkor Wat, Cambodia", miles:20, km:32, region:"Cambodia", desc:"A 20-mile (32 km) temple wander—ancient stones, jungle shade, sunrise energy."},
+  { id:"channel", name:"English Channel", miles:21, km:34, region:"UK/France", desc:"A 21-mile (34 km) grit-and-glory crossing—short distance, big legend."},
+  { id:"marathon", name:"Marathon to Athens, Greece", miles:26.2, km:42, region:"Greece", desc:"A 26.2-mile (42 km) classic—run the story that named the marathon."},
+  { id:"inca", name:"Inca Trail", miles:26, km:42, region:"Peru", desc:"A 26-mile (42 km) climb to Machu Picchu vibes—stone steps, clouds, and peaks."},
+  { id:"bangkok", name:"Bangkok, Thailand", miles:30, km:48, region:"Thailand", desc:"A 30-mile (48 km) city mission—markets, street food, and riverfront buzz."},
+  { id:"rovaniemi", name:"Rovaniemi, Finland", miles:30, km:48, region:"Finland", desc:"A 30-mile (48 km) Arctic loop—snowy streets and northern-lights dreams."},
+  { id:"berlin", name:"Berlin Wall", miles:30, km:48, region:"Germany", desc:"A 30-mile (48 km) history walk—trace the line, feel the story."},
+  { id:"paris", name:"Paris, France", miles:33, km:53, region:"France", desc:"A 33-mile (53 km) landmark loop—boulevards, bridges, and iconic views."},
+  { id:"rome", name:"Rome, Italy", miles:34, km:55, region:"Italy", desc:"A 34-mile (55 km) ancient-city stroll—piazzas, ruins, and espresso stops."},
+  { id:"jesus", name:"Jesus Trail", miles:39, km:63, region:"Israel", desc:"A 39-mile (63 km) pilgrimage path—hills, villages, and wide-open views."},
+  { id:"moria", name:"Mines of Moria (LOTR)", miles:40, km:64, region:"Middle-earth", desc:"A 40-mile (64 km) shadowy quest—keep moving… and don’t wake the Balrog."},
+  { id:"everest", name:"Mount Everest", miles:40, km:64, region:"Nepal", desc:"A 40-mile (64 km) ascent mission—stack steps like altitude gain."},
+  { id:"tokyo", name:"Tokyo, Japan", miles:45, km:72, region:"Japan", desc:"A 45-mile (72 km) neon-city grind—fast streets, hidden alleys, endless momentum."},
+  { id:"fuji", name:"Mount Fuji, Japan", miles:46, km:74, region:"Japan", desc:"A 46-mile (74 km) steady climb—clean lines, crisp air, summit vibes."},
+  { id:"giza", name:"Giza Pyramids, Egypt", miles:46, km:75, region:"Egypt", desc:"A 46-mile (75 km) desert-edge journey—pyramids, history, postcard moments."},
+  { id:"wct", name:"West Coast Trail", miles:47, km:76, region:"Canada", desc:"A 47-mile (76 km) rugged coastline challenge—mud, ladders, and ocean air."},
+  { id:"elvis", name:"Elvis in Memphis", miles:47, km:76, region:"USA", desc:"A 47-mile (76 km) rock-and-roll mission—walk it like a headliner."},
+  { id:"singapore", name:"Singapore", miles:50, km:80, region:"Singapore", desc:"A 50-mile (80 km) tropical city loop—gardens, skyline, and warm nights."},
+  { id:"vienna", name:"Vienna, Austria", miles:51, km:82, region:"Austria", desc:"A 51-mile (82 km) elegant circuit—cafés, palaces, and classical charm."},
+  { id:"banff", name:"Banff", miles:52, km:84, region:"Canada", desc:"A 52-mile (84 km) mountain-town escape—lakes, peaks, and fresh air."},
+  { id:"kings", name:"Valley of the Kings", miles:54, km:87, region:"Egypt", desc:"A 54-mile (87 km) tomb-and-temple trek—desert light and ancient echoes."},
+  { id:"vangogh", name:"Vincent van Gogh", miles:56, km:90, region:"France", desc:"A 56-mile (90 km) art-inspired route—fields, color, and big horizons."},
+  { id:"kili", name:"Mount Kilimanjaro", miles:60, km:97, region:"Tanzania", desc:"A 60-mile (97 km) summit quest—slow steps to the roof of Africa."},
+  { id:"space", name:"Space Exploration", miles:62, km:100, region:"Space", desc:"A 62-mile (100 km) starbound mission—count miles like orbits."},
+  { id:"hana", name:"Road to Hana, Hawaii", miles:64, km:104, region:"USA", desc:"A 64-mile (104 km) rainforest road—waterfalls, curves, and island air."},
+  { id:"rushmore", name:"Mount Rushmore", miles:69, km:111, region:"USA", desc:"A 69-mile (111 km) big-sky route—prairie miles and granite faces."},
+  { id:"niagara", name:"Niagara Falls", miles:70, km:113, region:"USA/Canada", desc:"A 70-mile (113 km) roar-and-mist journey—powerful steps, powerful views."},
+  { id:"gondor", name:"Gondor (LOTR)", miles:70, km:113, region:"Middle-earth", desc:"A 70-mile (113 km) march to the White City—hold the line and keep going."},
+  { id:"ny", name:"New York", miles:71, km:114, region:"USA", desc:"A 71-mile (114 km) city-grid mission—bridges, parks, skyline miles."},
+  { id:"london", name:"London", miles:75, km:121, region:"UK", desc:"A 75-mile (121 km) Thames-side tour—markets, museums, and foggy vibes."},
+  { id:"rohan", name:"Rohan (LOTR)", miles:80, km:129, region:"Middle-earth", desc:"An 80-mile (129 km) ride-out challenge—fast feet and horse-lord energy."},
+  { id:"dublin", name:"Dublin", miles:87, km:140, region:"Ireland", desc:"An 87-mile (140 km) lively loop—coastal breezes and pub-street charm."},
+  { id:"it", name:"IT (Horror Series)", miles:89, km:143, region:"Derry", desc:"An 89-mile (143 km) spooky-story mission—steady pace, no looking back."},
+  { id:"hadrian", name:"Hadrian’s Wall", miles:90, km:145, region:"UK", desc:"A 90-mile (145 km) frontier trek—Roman ruins and windy ridgelines."},
+  { id:"helms", name:"Helm’s Deep (LOTR)", miles:100, km:161, region:"Middle-earth", desc:"A 100-mile (161 km) fortress grind—one more mile, one more push."},
+  { id:"moon", name:"To The Moon", miles:100, km:161, region:"USA", desc:"A 100-mile (161 km) moonshot mission—stack effort like a countdown."},
+  { id:"fjords", name:"Fjords of Norway", miles:100, km:161, region:"Norway", desc:"A 100-mile (161 km) fjord-edge journey—cold air, cliffs, calm water."},
+  { id:"shire", name:"The Shire (LOTR)", miles:145, km:233, region:"Middle-earth", desc:"A 145-mile (233 km) cozy epic—hobbit pace, heroic finish."},
+  { id:"transylvania", name:"Transylvania", miles:231, km:372, region:"Romania", desc:"A 231-mile (372 km) gothic adventure—castles, forests, and midnight miles."},
+  { id:"romantic", name:"The Romantic Road", miles:268, km:431, region:"Germany", desc:"A 268-mile (431 km) fairytale route—half-timbered towns and rolling hills."},
+  { id:"mordor", name:"Mordor (LOTR)", miles:282, km:454, region:"Middle-earth", desc:"A 282-mile (454 km) endgame quest—hard miles, legendary finish."},
+  { id:"francis", name:"St. Francis Way", miles:312, km:502, region:"Italy", desc:"A 312-mile (502 km) reflective pilgrimage—quiet roads and steady steps."},
+  { id:"nakasendo", name:"Nakasendo Trail", miles:343, km:552, region:"Japan", desc:"A 343-mile (552 km) old-Japan path—forests, post towns, and calm rhythm."},
+  { id:"misswalk", name:"Mississippi River (Walking)", miles:383, km:617, region:"USA", desc:"A 383-mile (617 km) river-route mission—steady miles downstream."},
+  { id:"silkstory", name:"Silk Road (Story Mode)", miles:400, km:644, region:"Asia", desc:"A 400-mile (644 km) story journey—caravans, cities, and legend vibes."},
+  { id:"goldtri", name:"Golden Triangle", miles:476, km:766, region:"India", desc:"A 476-mile (766 km) culture epic—monuments, markets, and bright mornings."},
+  { id:"camino", name:"Camino de Santiago", miles:480, km:772, region:"Spain", desc:"A 480-mile (772 km) classic pilgrimage—one step at a time to Santiago."},
+  { id:"nc500", name:"North Coast 500", miles:500, km:805, region:"Scotland", desc:"A 500-mile (805 km) wild coast loop—cliffs, castles, and weather drama."},
+  { id:"ringroad", name:"Ring Road, Iceland", miles:828, km:1332, region:"Iceland", desc:"An 828-mile (1,332 km) lap of Route 1—waterfalls, lava fields, glaciers, and big-sky miles."},
+  { id:"uk", name:"Length of the UK", miles:1084, km:1744, region:"UK", desc:"A 1,084-mile (1,744 km) end-to-end traverse—big island energy."},
+  { id:"apptrail", name:"Appalachian Trail", miles:1968, km:3167, region:"USA", desc:"A 1,968-mile (3,167 km) thru-hike legend—mountains, grit, glory."},
+  { id:"route66", name:"Route 66", miles:2280, km:3669, region:"USA", desc:"A 2,280-mile (3,669 km) icon route—walk the Mother Road."},
+  { id:"misscycle", name:"Mississippi River (Cycling)", miles:2290, km:3685, region:"USA", desc:"A 2,290-mile (3,685 km) cycling epic—big river, big ride."},
+  { id:"pct", name:"Pacific Crest Trail", miles:2485, km:3999, region:"USA", desc:"A 2,485-mile (3,999 km) west-coast epic—desert to alpine to ocean."},
+  { id:"cdt", name:"Continental Divide Trail", miles:2865, km:4610, region:"USA", desc:"A 2,865-mile (4,610 km) spine-of-America mission—pure endurance."},
+  { id:"silklong", name:"Silk Road (Long Mode)", miles:3000, km:4828, region:"Asia", desc:"A 3,000-mile (4,828 km) mega-mode—true expedition miles."}
+].sort((a,b)=>a.miles-b.miles);
+
+/* ========= Storage ========= */
+const KEY = "conqueror_routes_v3";
+function loadState(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return { active:[], completed:[], posts:[], selectedView:"active", selectedId:null };
+    const st = JSON.parse(raw);
+    st.active ||= [];
+    st.completed ||= [];
+    st.posts ||= [];
+    st.selectedView ||= "active";
+    if(st.selectedId === undefined) st.selectedId = st.active[0]?.activeId || st.completed[0]?.activeId || null;
+    return st;
+  }catch(e){
+    return { active:[], completed:[], posts:[], selectedView:"active", selectedId:null };
+  }
+}
+function saveState(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+let state = loadState();
+
+/* ========= Helpers ========= */
+const $ = (id)=>document.getElementById(id);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function todayISO(){
+  const d = new Date();
+  d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+  return d.toISOString().slice(0,10);
+}
+function daysBetween(startISO, endISO){
+  if(!startISO || !endISO) return 0;
+  const s = new Date(startISO+"T00:00:00");
+  const e = new Date(endISO+"T00:00:00");
+  return Math.max(0, Math.round((e - s) / (1000*60*60*24)));
+}
+function missionById(id){ return MISSIONS.find(m=>m.id===id) || null; }
+function missionEmoji(m){
+  const n=(m.name||"").toLowerCase();
+  const r=(m.region||"").toLowerCase();
+  if(n.includes("lotr") || n.includes("mordor") || n.includes("shire") || n.includes("gondor") || n.includes("rohan") || n.includes("helm") || n.includes("moria")) return "🗡️";
+  if(n.includes("moon") || n.includes("space")) return "🪐";
+  if(n.includes("everest") || n.includes("kilimanjaro") || n.includes("fuji")) return "⛰️";
+  if(n.includes("channel")) return "🌬️";
+  if(n.includes("niagara")) return "💦";
+  if(n.includes("fjord") || r.includes("iceland") || n.includes("ring road")) return "🧊";
+  if(n.includes("hana")) return "🌿";
+  if(r.includes("japan") || n.includes("tokyo")) return "🗾";
+  if(r.includes("egypt") || n.includes("giza") || n.includes("pyramids") || n.includes("kings")) return "🏺";
+  if(n.includes("berlin")) return "🧱";
+  if(n.includes("paris")) return "🗼";
+  if(n.includes("rome")) return "🏛️";
+  if(n.includes("london") || r.includes("uk") || n.includes("hadrian")) return "🕰️";
+  if(n.includes("camino")) return "🥾";
+  if(n.includes("route 66")) return "🛣️";
+  if(n.includes("trail")) return "🥾";
+  if(n.includes("mississippi")) return "🌊";
+  return "🧭";
+}
+function convertToMiles(val, unit){
+  const v = Number(val||0);
+  if(!isFinite(v)) return 0;
+  return unit==="km" ? (v*0.621371) : v;
+}
+function round1(x){ return Math.round(x*10)/10; }
+function computeBadges(distancePct){
+  const gates=[10,25,50,75,100];
+  return gates.map(g=>({g, done: distancePct>=g}));
+}
+
+/* ========= Accessors ========= */
+function findInView(view, id){
+  const arr = (view==="completed") ? state.completed : state.active;
+  return arr.find(a=>a.activeId===id) || null;
+}
+function currentItem(){
+  return findInView(state.selectedView, state.selectedId);
+}
+function postsForActive(activeId){
+  return state.posts.filter(p=>p.activeId===activeId).sort((a,b)=> (a.date<b.date?1:-1));
+}
+function sumMilesForActive(activeId){
+  return postsForActive(activeId).reduce((s,p)=>s+(p.miles||0),0);
+}
+
+/* ========= UI Nav ========= */
+const screens = { overview: $("screenOverview"), mission: $("screenMission"), post: $("screenPost") };
+function showScreen(name){
+  Object.values(screens).forEach(s=>s.classList.remove("active"));
+  screens[name].classList.add("active");
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===name));
+}
+document.querySelectorAll(".tab").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const tab = btn.dataset.tab;
+    if(tab==="mission"){
+      ensureSelection();
+      renderMission();
+    }
+    showScreen(tab);
+  });
+});
+
+/* ========= Toast ========= */
+let toastTimer=null;
+function toast(msg){
+  const t=$("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("show"), 1200);
+}
+
+/* ========= Ensure selection ========= */
+function ensureSelection(){
+  const hasActive = state.active.length>0;
+  const hasComp = state.completed.length>0;
+
+  if(state.selectedView==="active" && !hasActive && hasComp) state.selectedView="completed";
+  if(state.selectedView==="completed" && !hasComp && hasActive) state.selectedView="active";
+
+  const arr = state.selectedView==="completed" ? state.completed : state.active;
+  if(!arr.find(x=>x.activeId===state.selectedId)){
+    state.selectedId = arr[0]?.activeId || null;
+  }
+  saveState();
+}
+
+/* ========= Dialog Add mission ========= */
+const dlg = $("dlgAdd");
+$("btnAddMission").addEventListener("click", ()=>{
+  fillAddDialog();
+  dlg.showModal();
+});
+$("dlgCancel").addEventListener("click", ()=> dlg.close());
+$("dlgAddBtn").addEventListener("click", ()=>{
+  const mid = $("dlgMission").value;
+  const days = Number($("dlgDays").value || 0);
+  const start = $("dlgStart").value || todayISO();
+  const m = missionById(mid);
+  if(!m){ toast("Pick a mission"); return; }
+  if(days<=0){ toast("Add days"); return; }
+  if(state.active.some(a=>a.missionId===mid)){ toast("Already active"); return; }
+
+  const activeId = "a_"+Math.random().toString(36).slice(2,10);
+  state.active.push({ activeId, missionId: mid, startDate: start, daysGoal: days });
+  state.selectedView = "active";
+  state.selectedId = activeId;
+  saveState();
+  dlg.close();
+  toast("Mission added");
+  renderAll();
+  showScreen("mission");
+});
+function fillAddDialog(){
+  const sel = $("dlgMission");
+  sel.innerHTML="";
+  MISSIONS.forEach(m=>{
+    const opt = document.createElement("option");
+    opt.value = m.id;
+    opt.textContent = `${m.name} • ${m.miles} mi`;
+    sel.appendChild(opt);
+  });
+  $("dlgDays").value = "";
+  $("dlgStart").value = todayISO();
+}
+
+/* ========= Post distance ========= */
+$("postDate").value = todayISO();
+$("btnSavePost").addEventListener("click", ()=>{
+  const activeId = $("postMission").value;
+  const date = $("postDate").value || todayISO();
+  const unit = $("postUnit").value;
+  const activity = $("postActivity").value;
+  const dist = Number($("postDistance").value || 0);
+  if(!activeId){ toast("Select mission"); return; }
+  if(!(dist>0)){ toast("Add distance"); return; }
+
+  const miles = convertToMiles(dist, unit);
+  state.posts.push({ id:"p_"+Math.random().toString(36).slice(2,10), activeId, date, activity, miles });
+  saveState();
+  $("postDistance").value = "";
+  toast("Saved");
+  renderAll();
+});
+$("btnClearPost").addEventListener("click", ()=>{
+  $("postDistance").value="";
+  $("postDate").value = todayISO();
+});
+
+/* ========= Mission controls ========= */
+$("btnPostFromMission").addEventListener("click", ()=>{
+  fillPostMissionSelect();
+  const cur = currentItem();
+  if(cur && state.selectedView==="active") $("postMission").value = cur.activeId;
+  showScreen("post");
+});
+
+$("btnSaveTimeframe").addEventListener("click", ()=>{
+  const cur = currentItem();
+  if(!cur || state.selectedView!=="active"){ toast("Active only"); return; }
+  const start = $("tfStart").value || todayISO();
+  const days = Number($("tfDays").value || 0);
+  if(days<=0){ toast("Days?"); return; }
+  cur.startDate = start;
+  cur.daysGoal = days;
+  saveState();
+  toast("Timeframe saved");
+  renderMission();
+  renderOverview();
+});
+
+$("btnCompleteMission").addEventListener("click", ()=>{
+  const cur = currentItem();
+  if(!cur || state.selectedView!=="active") return;
+
+  state.completed.push({ ...cur, completedOn: todayISO() });
+  state.active = state.active.filter(x=>x.activeId!==cur.activeId);
+
+  state.selectedView = state.active.length ? "active" : "completed";
+  state.selectedId = (state.selectedView==="active" ? state.active[0]?.activeId : state.completed[0]?.activeId) || null;
+  saveState();
+
+  toast("Marked complete");
+  renderAll();
+  showScreen("overview");
+});
+
+/* Toggle view on Mission screen */
+$("chipActive").addEventListener("click", ()=>{
+  state.selectedView = "active";
+  ensureSelection();
+  renderMission();
+});
+$("chipCompleted").addEventListener("click", ()=>{
+  state.selectedView = "completed";
+  ensureSelection();
+  renderMission();
+});
+
+/* Mission select dropdown */
+$("missionSelect").addEventListener("change", ()=>{
+  state.selectedId = $("missionSelect").value || null;
+  saveState();
+  renderMission();
+});
+
+/* ========= Rendering ========= */
+function fillPostMissionSelect(){
+  const sel = $("postMission");
+  sel.innerHTML = "";
+  state.active.forEach(a=>{
+    const m = missionById(a.missionId);
+    const opt = document.createElement("option");
+    opt.value = a.activeId;
+    opt.textContent = m ? m.name : a.missionId;
+    sel.appendChild(opt);
+  });
+  $("postDate").value = todayISO();
+}
+
+function renderOverview(){
+  $("pillActive").textContent = state.active.length;
+  $("pillCompleted").textContent = state.completed.length;
+  $("activeCount").textContent = state.active.length;
+  $("completedCount").textContent = state.completed.length;
+
+  const totalMi = state.posts.reduce((s,p)=>s+(p.miles||0),0);
+  $("pillTotal").textContent = round1(totalMi).toFixed(1);
+  $("pillUnit").textContent = "mi";
+  $("heroMiles").textContent = round1(totalMi).toFixed(1);
+  $("heroUnit").textContent = "mi";
+
+  if(state.active.length){
+    $("heroTitle").textContent = `${state.active.length} active mission${state.active.length>1?"s":""}`;
+    $("heroDesc").textContent = "Short missions + long missions can run together. Post distance to any active mission.";
+  }else{
+    $("heroTitle").textContent = "No active missions yet";
+    $("heroDesc").textContent = "Add long-term missions (like Ring Road) and short “weekend warrior” missions at the same time.";
+  }
+
+  let badges=0;
+  [...state.active, ...state.completed].forEach(a=>{
+    const m = missionById(a.missionId);
+    if(!m) return;
+    const doneMi = sumMilesForActive(a.activeId);
+    const pct = (doneMi / m.miles) * 100;
+    badges += computeBadges(pct).filter(x=>x.done).length;
+  });
+  $("pillBadges").textContent = badges;
+
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(),0,1);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(),1);
+  const day = (now.getDay()+6)%7;
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate()-day);
+  startOfWeek.setHours(0,0,0,0);
+  function sumSince(d0){
+    const t0 = d0.getTime();
+    return state.posts.reduce((s,p)=>{
+      const t = new Date(p.date+"T00:00:00").getTime();
+      return s + (t>=t0 ? (p.miles||0) : 0);
+    },0);
+  }
+  $("kpiWeek").textContent = round1(sumSince(startOfWeek)).toFixed(1);
+  $("kpiMonth").textContent = round1(sumSince(startOfMonth)).toFixed(1);
+  $("kpiYear").textContent = round1(sumSince(startOfYear)).toFixed(1);
+  $("kpiAll").textContent = round1(totalMi).toFixed(1);
+  ["kpiWeekUnit","kpiMonthUnit","kpiYearUnit","kpiAllUnit"].forEach(id=>$(id).textContent="mi");
+
+  const activeWrap = $("activeMissions");
+  const compWrap = $("completedMissions");
+  activeWrap.innerHTML="";
+  compWrap.innerHTML="";
+  $("activeHint").style.display = state.active.length ? "none" : "block";
+  $("completedHint").style.display = state.completed.length ? "none" : "block";
+
+  function buildCard(a, view){
+    const m = missionById(a.missionId);
+    const doneMi = sumMilesForActive(a.activeId);
+    const pct = m ? clamp((doneMi/m.miles)*100,0,999) : 0;
+    const daysElapsed = a.startDate ? daysBetween(a.startDate, todayISO()) : 0;
+    const daysGoal = Number(a.daysGoal||0);
+    const timePct = daysGoal ? clamp((daysElapsed/daysGoal)*100,0,999) : 0;
+
+    const card = document.createElement("div");
+    card.className = "mission";
+    const icon = missionEmoji(m||{name:"",region:""});
+    const isCompleted = (view==="completed");
+    card.innerHTML = `
+      <div class="mTop grow">
+        <div class="mIcon" style="${isCompleted?'background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06);':''}">${icon}</div>
+        <div class="grow" style="min-width:0;">
+          <div class="mTitle">${m?m.name:"Mission"}</div>
+          <div class="mSub">${m?m.desc:""}</div>
+          <div class="row" style="gap:8px; margin-top:10px; flex-wrap:wrap;">
+            <span class="tag"><span class="dot ${isCompleted?'gray':'ok'}"></span> Distance <b>${Math.round(pct)}%</b></span>
+            <span class="tag"><span class="dot ${isCompleted?'gray':'blue'}"></span> Time <b>${Math.round(timePct)}%</b></span>
+            ${isCompleted ? `<span class="tag">✅ Completed</span>` : ``}
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+        <button class="btn ${isCompleted?'btnGhost':'btnPrimary'}" data-open="${a.activeId}" data-view="${view}">Open</button>
+      </div>
+    `;
+    card.querySelector("[data-open]").addEventListener("click", (e)=>{
+      state.selectedView = e.target.dataset.view;
+      state.selectedId = e.target.dataset.open;
+      saveState();
+      ensureSelection();
+      renderMission();
+      showScreen("mission");
+    });
+    return card;
+  }
+
+  state.active.forEach(a=> activeWrap.appendChild(buildCard(a,"active")));
+  state.completed.forEach(a=> compWrap.appendChild(buildCard(a,"completed")));
+
+  fillPostMissionSelect();
+}
+
+function renderMission(){
+  ensureSelection();
+
+  $("chipActive").classList.toggle("active", state.selectedView==="active");
+  $("chipCompleted").classList.toggle("active", state.selectedView==="completed");
+
+  const sel = $("missionSelect");
+  sel.innerHTML = "";
+  const arr = (state.selectedView==="completed") ? state.completed : state.active;
+  arr.forEach(a=>{
+    const m = missionById(a.missionId);
+    const opt = document.createElement("option");
+    opt.value = a.activeId;
+    opt.textContent = m ? m.name : a.missionId;
+    sel.appendChild(opt);
+  });
+  sel.value = state.selectedId || "";
+
+  const cur = currentItem();
+  const timeframeCard = $("timeframeCard");
+  const postBtn = $("btnPostFromMission");
+
+  if(!cur){
+    $("missionTitle").textContent = "No mission selected";
+    $("missionDesc").textContent = "Add a mission in Overview.";
+    $("missionProgressNum").textContent = "0.0";
+    $("missionUnit").textContent = "mi";
+    timeframeCard.style.display = "none";
+    postBtn.disabled = true;
+    return;
+  }
+
+  const m = missionById(cur.missionId);
+  const doneMi = sumMilesForActive(cur.activeId);
+  const pct = m ? clamp((doneMi / m.miles) * 100, 0, 999) : 0;
+
+  $("missionTitle").textContent = m ? m.name : "Mission";
+  $("missionDesc").textContent = m ? m.desc : "";
+  $("missionProgressNum").textContent = round1(doneMi).toFixed(1);
+  $("missionUnit").textContent = "mi";
+
+  const isCompleted = (state.selectedView==="completed");
+  timeframeCard.style.display = isCompleted ? "none" : "block";
+  postBtn.disabled = isCompleted;
+
+  if(!isCompleted){
+    $("tfStart").value = cur.startDate || todayISO();
+    $("tfDays").value = cur.daysGoal || "";
+  }
+
+  $("distPct").textContent = `${Math.round(pct)}%`;
+  $("distDone").textContent = round1(doneMi).toFixed(1);
+  $("distGoal").textContent = m ? round1(m.miles).toFixed(1) : "0.0";
+  $("distUnit").textContent = "mi";
+  $("distBar").style.width = `${clamp(pct,0,100)}%`;
+
+  const daysElapsed = cur.startDate ? daysBetween(cur.startDate, todayISO()) : 0;
+  const daysGoal = Number(cur.daysGoal || 0);
+  const tp = daysGoal ? clamp((daysElapsed/daysGoal)*100,0,999) : 0;
+  $("timePct").textContent = `${Math.round(tp)}%`;
+  $("daysDone").textContent = daysElapsed;
+  $("daysGoal").textContent = daysGoal || 0;
+  $("timeBar").style.width = `${clamp(tp,0,100)}%`;
+
+  const remainMi = m ? Math.max(0, m.miles - doneMi) : 0;
+  const remainDays = daysGoal ? Math.max(0, daysGoal - daysElapsed) : 0;
+  $("remainDist").textContent = round1(remainMi).toFixed(1);
+  $("remainUnit").textContent = "mi";
+  $("remainDays").textContent = remainDays;
+
+  $("doneDist").textContent = round1(doneMi).toFixed(1);
+  $("doneUnit").textContent = "mi";
+  $("doneDays").textContent = daysElapsed;
+
+  const badgeWrap = $("badgeRow");
+  badgeWrap.innerHTML = "";
+  computeBadges(pct).forEach(b=>{
+    const el = document.createElement("div");
+    el.className = "pill";
+    el.style.borderColor = b.done ? "rgba(99,214,199,.22)" : "rgba(255,255,255,.07)";
+    el.style.color = b.done ? "#c7fff6" : "var(--dim)";
+    el.innerHTML = `${b.done ? "✅" : "⬜"} <b style="font-family:var(--mono);">${b.g}%</b>`;
+    badgeWrap.appendChild(el);
+  });
+
+  const list = $("missionPosts");
+  const posts = postsForActive(cur.activeId);
+  list.innerHTML = "";
+  $("missionPostsHint").style.display = posts.length ? "none" : "block";
+  posts.slice(0,12).forEach(p=>{
+    const item = document.createElement("div");
+    item.className = "postItem";
+    const mi = p.miles || 0;
+    item.innerHTML = `
+      <div class="postTop">
+        <b>${p.activity}</b>
+        <span class="tag"><b>${round1(mi).toFixed(1)}</b> mi</span>
+      </div>
+      <div class="postMeta">${p.date}</div>
+    `;
+    list.appendChild(item);
+  });
+
+  fillPostMissionSelect();
+}
+
+function renderAll(){
+  renderOverview();
+  renderMission();
+}
+
+/* ========= Init ========= */
+ensureSelection();
+renderAll();
+fillPostMissionSelect();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
